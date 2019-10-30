@@ -1,125 +1,99 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
+#include <windows.h>
+#include <stdlib.h>
 #include <string.h>
 
-#define NUM_SECS 1.0f
-
-void delay(int b){
-    clock_t delay = b * CLOCKS_PER_SEC;
-    clock_t start = clock();
-    while ( ( clock() - start ) < delay );
-}
-
 typedef struct cvor{
-    struct cvor *next;
-    struct cvor *prev;
-    char naziv[100];
+    struct cvor *left;
+    struct cvor *right;
+    char proces[1000];
     int second;
 }CVOR;
 
-int br = 1;
 int suma = 0;
+int n;
 
-CVOR *add_begin(CVOR **p){
-    CVOR *now = (CVOR*)malloc(sizeof(CVOR));
-    strcpy(now->naziv, "naziv\0");
-    int i = 0;
-    while ( now->naziv[i] != '\0' ) i++;
-    now->naziv[i] = (char)(br+'0');
-    now->naziv[i+1] = '\0';
-    br++;
+CVOR *add_begin(CVOR **p, int i){
+    CVOR *new = (CVOR*)malloc(sizeof(CVOR));
+    new->second = rand() % 5 + 1;
+    strcpy(new->proces, "proces\0");
 
-    //srand(time(NULL));
-    now->second = rand() % 5 + 1;
+    suma+= new->second;
 
-    suma+=now->second;
+    char broj[100];
+    itoa(i, broj, 10);
 
-    now->next = 0;
-    now->prev = 0;
+    strcat(new->proces, broj);
 
     if ( *p == 0 ){
-        *p = now;
+        new->left = new;
+        new->right = new;
+
+        *p = new;
     }else{
-        now->next = *p;
+        new->left = (*p)->left;
+        new->right = *p;
+        (*p)->left = new;
 
-        if ( (*p)->prev == 0 ){
-            now->prev = *p;
-            (*p)->next = now;
-            (*p)->prev = now;
-        }else{
-            now->prev = (*p)->prev;
-            (*p)->prev = now;
-        }
+        *p = new;
     }
 
-    return now;
+    return new;
 }
 
-void ispis(CVOR *p){
+void print_right(CVOR *p, int flag){
     int i = 0;
-
-    for (;i<br-1;i++){
-        printf("Naziv: %s, Sekunde: %d\n\n", p->naziv, p->second);
-        p = p->next;
+    for (;i<n;i++){
+        if (flag) Sleep(p->second * 1000);
+        printf("%s %d\n", p->proces, p->second);
+        p = p->right;
     }
 }
 
-void ispisl(CVOR *p){
+void print_left(CVOR *p){
     int i = 0;
-
-    for (;i<br-1;i++){
-        delay(p->second);
-        printf("Naziv: %s, Sekunde: %d\n\n", p->naziv, p->second);
-        p = p->prev;
+    for (;i<n;i++){
+        Sleep(p->second * 1000);
+        printf("%s %d\n", p->proces, p->second);
+        p = p->left;
     }
 }
 
-void ispisd(CVOR *p){
-    int i = 0;
+int main(){
+    printf("Unesite broj procesa: ");
+    scanf("%d", &n);
 
-    for (;i<br-1;i++){
-        delay(p->second);
-        printf("Naziv: %s, Sekunde: %d\n\n", p->naziv, p->second);
-        p = p->next;
-    }
-}
-
-
-int main()
-{
     CVOR *p = 0;
-    int broj = 0;
 
-    printf("Odaberite broj procesa: \n");
-    scanf("%d", &broj);
-
-    int i = 0;
-    for (;i<broj;i++){
-        p = add_begin(&p);
+    int i = 1;
+    for (;i<=n;i++){
+        p = add_begin(&p, i);
     }
 
-    ispis(p);
+    print_right(p, 0);
 
-    printf("Odaberite smjer: \n");
-    printf("        - Lijevo [1]\n");
-    printf("        - Desno  [2]\n");
+    int smjer = -1;
+    do{
+        printf("Izaberite smjer ispisa: \n");
+        printf("     - Lijevo [1]\n");
+        printf("     - Desno  [2]\n");
+        scanf("%d", &smjer);
+    }while (smjer != 1 && smjer != 2);
 
-    int dir;
-    scanf("%d", &dir);
+    char str[100];
+    do{
+        printf("Unesite naredbu START: ");
+        scanf("%s", str);
+    }while ( strcmp(str, "START") != 0 );
 
-    printf("Unesite rijec START za pokretanje: ");
-    char t[100];
-    scanf("%s", t);
-
-    if ( !strcmp(t, "START") ){
-        if ( dir == 1 ){
-            ispisl(p);
-        }else{
-            ispisd(p);
-        }
+    if ( smjer == 1 ){
+        print_left(p);
+    }else{
+        print_right(p, 1);
     }
 
-    printf("Ukupno vrijeme izvrsavanja procesa: %d\n", suma);
+    printf("Suma izvrsavanja procesa je: %d", suma);
     return 0;
 }
