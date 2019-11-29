@@ -17,9 +17,16 @@ QNODE *Q_ADD(QNODE **p, NODE *bp){
         }
 
         if ( buff->left == 0 ){
+            if ( buff->p->v < bp->v ){
+                new->left = buff;
+                new->right = buff->right;
+                buff->right = new;
+            }else{
+
             new->right = buff;
             buff->left = new;
             *p = new;
+            }
         }else if ( buff->right == 0 ){
             if ( buff->p->v <= bp->v ){
                 new->left = buff;
