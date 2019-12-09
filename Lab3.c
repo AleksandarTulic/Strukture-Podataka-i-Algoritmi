@@ -64,7 +64,7 @@ int IS_BALANCED(NODE *root, int height){
 }
 
 void del(NODE *root){
-    if ( root ){
+    if ( root != 0 ){
         del(root->left);
         del(root->right);
         free(root);
@@ -85,7 +85,6 @@ int main(){
 
     WRITE_PREORDER(root);printf("\n\n");
     WRITE_INORDER(root);
-    del(root);
 
     IS_BALANCED(root, 0);
 
@@ -94,5 +93,7 @@ int main(){
     }else{
         printf("Stablo nije balansirano!!!\n");
     }
+
+    del(root);
     return 0;
 }
