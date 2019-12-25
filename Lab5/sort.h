@@ -14,11 +14,17 @@ typedef struct film{
     char genre[100];
 }FILM;
 
-FILM niz[1500];
+typedef struct algoritam{
+    char name[100];
+    double time;
+}ALGORITAM;
+
+FILM niz[1000];
 int n;
 
 void print(char [], FILM []);
 void read_csv();
+void sort_sort(ALGORITAM []);
 void schell_sort(FILM []);
 void m_heap(FILM [], int, int);
 void heap_sort(FILM []);
