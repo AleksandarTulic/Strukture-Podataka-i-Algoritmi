@@ -1,7 +1,7 @@
 #include "sort.h"
 
 void read_csv(){
-    FILE *fp = fopen("reportcard.csv", "r");
+    FILE *fp = fopen("movies.csv", "r");
 
     n = 0;
 
@@ -12,7 +12,7 @@ void read_csv(){
         niz[n].num_act = 0;
 
         char *p;
-        p = strtok(buff, ";");
+        p = strtok(buff, ",");
 
         while ( p != NULL ){
             if ( !br ){
@@ -148,4 +148,23 @@ void print(char aa[], FILM a[]){
     }
 
     fclose(fp);
+}
+
+void sort_sort(ALGORITAM a[]){
+    int h = 3 / 2;
+
+    for (;h>0;h/=2){
+        int i = 0;
+
+        for (i=h;i<3;i++){
+            ALGORITAM x = a[i];
+            int j = 0;
+
+            for (j=i;j>=h && x.time < a[j-h].time;j-=h){
+                a[j] = a[j-h];
+            }
+
+            a[j] = x;
+        }
+    }
 }
